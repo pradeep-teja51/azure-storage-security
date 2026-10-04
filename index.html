@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Azure Storage Security Project</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #0f172a;
+            color: white;
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 38px;
+            margin-bottom: 12px;
+        }
+
+        header p {
+            font-size: 18px;
+            color: #cbd5e1;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            background: white;
+            padding: 30px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .section h2 {
+            color: #0f172a;
+            margin-bottom: 15px;
+        }
+
+        .architecture {
+            text-align: center;
+            padding: 25px;
+            background: #eef6ff;
+            border-radius: 10px;
+            font-size: 18px;
+        }
+
+        .arrow {
+            font-size: 25px;
+            margin: 8px;
+        }
+
+        .tests {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .test-card {
+            padding: 22px;
+            border-radius: 10px;
+            background: #f8fafc;
+            border-left: 5px solid #16a34a;
+        }
+
+        .blocked {
+            border-left-color: #dc2626;
+        }
+
+        .status {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .success {
+            color: #16a34a;
+        }
+
+        .danger {
+            color: #dc2626;
+        }
+
+        pre {
+            background: #111827;
+            color: #e5e7eb;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-top: 12px;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .control {
+            background: #f8fafc;
+            padding: 18px;
+            border-radius: 8px;
+        }
+
+        .control strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        footer {
+            background: #0f172a;
+            color: #cbd5e1;
+            text-align: center;
+            padding: 25px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Azure Storage Security</h1>
+    <p>Storage Account Firewall & Private Endpoint Lockdown</p>
+</header>
+
+<div class="container">
+
+    <div class="section">
+        <h2>Project Overview</h2>
+
+        <p>
+            This project secures an Azure Storage Account by disabling
+            public network access and allowing connectivity through an
+            Azure Virtual Network and Private Endpoint.
+        </p>
+
+        <br>
+
+        <p>
+            The implementation uses Azure Virtual Network, Private Endpoint,
+            Private DNS, Storage Firewall restrictions and Azure Policy.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Architecture</h2>
+
+        <div class="architecture">
+
+            <div>🖥️ Azure Test VM</div>
+
+            <div class="arrow">↓</div>
+
+            <div>🌐 Virtual Network</div>
+
+            <div class="arrow">↓</div>
+
+            <div>🔎 Private DNS</div>
+
+            <div class="arrow">↓</div>
+
+            <div>🔒 Private Endpoint</div>
+
+            <div class="arrow">↓</div>
+
+            <div>☁️ Azure Storage Account</div>
+
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Security Configuration</h2>
+
+        <div class="controls">
+
+            <div class="control">
+                <strong>Public Network Access</strong>
+                Disabled
+            </div>
+
+            <div class="control">
+                <strong>Private Endpoint</strong>
+                Approved
+            </div>
+
+            <div class="control">
+                <strong>Private IP</strong>
+                10.0.1.4
+            </div>
+
+            <div class="control">
+                <strong>Azure Policy</strong>
+                Compliant
+            </div>
+
+            <div class="control">
+                <strong>Secure Transfer</strong>
+                Enabled
+            </div>
+
+            <div class="control">
+                <strong>Minimum TLS</strong>
+                TLS 1.2
+            </div>
+
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Execution & Security Tests</h2>
+
+        <div class="tests">
+
+            <div class="test-card blocked">
+
+                <div class="status danger">
+                    ❌ Public Access Blocked
+                </div>
+
+                <p>
+                    Test performed from an external Windows computer.
+                </p>
+
+                <pre>curl -I --max-time 10 https://stazstoragepradeep01.blob.core.windows.net/test-data/test-security.txt
+
+HTTP 403</pre>
+
+                <p>
+                    Public/external access is rejected.
+                </p>
+
+            </div>
+
+
+            <div class="test-card">
+
+                <div class="status success">
+                    ✅ Private DNS Resolution
+                </div>
+
+                <p>
+                    Test performed from the Azure VM.
+                </p>
+
+                <pre>nslookup stazstoragepradeep01.blob.core.windows.net
+
+10.0.1.4</pre>
+
+                <p>
+                    The Storage endpoint resolves to the Private Endpoint IP.
+                </p>
+
+            </div>
+
+
+            <div class="test-card">
+
+                <div class="status success">
+                    ✅ Private Connectivity
+                </div>
+
+                <p>
+                    HTTPS connectivity test performed from the Azure VM.
+                </p>
+
+                <pre>curl -I --max-time 10 https://stazstoragepradeep01.blob.core.windows.net
+
+HTTP 400</pre>
+
+                <p>
+                    Azure Storage responded to the request, confirming
+                    service reachability through the private network path.
+                </p>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Result</h2>
+
+        <p>
+            The security configuration successfully prevents public network
+            access while providing private connectivity through the Azure
+            Virtual Network and Private Endpoint.
+        </p>
+
+        <br>
+
+        <p class="status success">
+            ✅ Public network access blocked
+        </p>
+
+        <p class="status success">
+            ✅ Private DNS resolution verified
+        </p>
+
+        <p class="status success">
+            ✅ Private Endpoint connectivity verified
+        </p>
+
+        <p class="status success">
+            ✅ Azure Policy compliance verified
+        </p>
+
+    </div>
+
+</div>
+
+<footer>
+    Azure Storage Security Project | Azure Infrastructure & Network Security
+</footer>
+
+</body>
+</html>

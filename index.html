@@ -300,6 +300,72 @@ HTTP 400</pre>
     <div class="section">
         <h2>Result</h2>
 
+        <!-- Private Access Validation -->
+<section>
+    <h2>Private Access Validation</h2>
+
+    <p>
+        Private access is provided through an Azure Private Endpoint
+        connected to the project's Virtual Network.
+    </p>
+
+    <div style="background:#f1f5f9; padding:20px; border-radius:10px; margin:20px 0;">
+
+        <h3>Private Network Flow</h3>
+
+        <p style="font-size:18px; font-weight:bold;">
+            Azure Test VM
+            →
+            Private DNS
+            →
+            <span style="color:#2563eb;">10.0.1.4</span>
+            →
+            Private Endpoint
+            →
+            Azure Storage
+        </p>
+
+    </div>
+
+    <h3>Private DNS Test</h3>
+
+    <pre style="background:#0f172a; color:#fff; padding:15px; border-radius:8px;">
+nslookup stazstoragepradeep01.blob.core.windows.net
+
+Canonical Name:
+stazstoragepradeep01.privatelink.blob.core.windows.net
+
+Address:
+10.0.1.4
+    </pre>
+
+    <p>
+        The Storage Blob endpoint resolves to
+        <strong>10.0.1.4</strong>, the private IP address
+        of the Azure Private Endpoint.
+    </p>
+
+    <h3>Private Connectivity Test</h3>
+
+    <pre style="background:#0f172a; color:#fff; padding:15px; border-radius:8px;">
+curl -I --max-time 10 https://stazstoragepradeep01.blob.core.windows.net
+
+HTTP 400
+    </pre>
+
+    <p>
+        The Azure Storage service responded to the request from the
+        Azure VM, confirming reachability through the private network
+        path. The HTTP 400 response indicates that the basic request
+        itself was not a valid Storage operation.
+    </p>
+
+    <div style="background:#dcfce7; padding:15px; border-radius:8px; margin-top:20px;">
+        <strong>Private Access Result:</strong>
+        Private DNS resolution and Private Endpoint connectivity verified.
+    </div>
+</section>
+
         <div style="margin: 20px 0; padding: 20px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 10px; text-align: center;">
 
     <h3 style="color: #dc2626; margin-bottom: 10px;">
